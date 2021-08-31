@@ -31,8 +31,6 @@ while running:
             
     mp.update(pygame.key.get_pressed())
 
-    cactus_sprites, all_sprites = mechs.generate_cacti(cactus_sprites, all_sprites)
-
     # Load in sprites
     for sprite in all_sprites:
         screen.blit(sprite.surf, sprite.rect)
