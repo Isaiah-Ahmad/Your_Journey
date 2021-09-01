@@ -1,6 +1,5 @@
-import pygame
 from pygame.locals import *
-from pygame import event
+from pygame import event, QUIT
 
 class EventHandler:
     def __init__(self, screen):
@@ -9,7 +8,7 @@ class EventHandler:
 
     def check_for_events(self):
         for task in event.get():
-            if task == QUIT:
+            if task.type == QUIT:
                 raise SystemExit()
             if task.type == KEYDOWN:
                 self.handle_key_press(task.key)
