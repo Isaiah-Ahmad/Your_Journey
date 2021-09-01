@@ -8,7 +8,7 @@ from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 class Player(ps.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = scale(load("./Assets/images/iseh2.png").convert(), (50, 50))
+        self.surf = scale(load("./Assets/sprites/iseh2.png").convert(), (50, 50))
         self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect()
 
@@ -35,7 +35,7 @@ class Player(ps.Sprite):
 class Cactus(ps.Sprite):
     def __init__(self):
         super(Cactus, self).__init__()
-        self.surf = scale(load("./Assets/images/cactus.png").convert(), (30, 30))
+        self.surf = scale(load("./Assets/sprites/cactus.png").convert(), (30, 30))
         self.surf.set_colorkey((0, 0, 0))
         self.rect = self.surf.get_rect(
             center=(
