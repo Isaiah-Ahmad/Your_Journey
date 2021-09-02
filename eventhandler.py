@@ -3,6 +3,7 @@ from pygame import event, QUIT
 
 class EventHandler:
     def __init__(self):
+        # self.screen_color = (194,178,128)
         self.screen_color = (51, 51, 51)
 
     def check_for_events(self):
