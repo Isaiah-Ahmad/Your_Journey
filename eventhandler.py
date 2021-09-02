@@ -1,7 +1,7 @@
 from pygame.locals import *
 from pygame import event, QUIT
 from constants import gamestate
-from terrain import Terrain
+from terrain import terrain
 
 # CustomEvents
 BGCHANGE = USEREVENT + 1
@@ -13,7 +13,6 @@ class EventHandler:
         # self.screen_color = (194,178,128)
         self.screen_color = (51, 51, 51)
         self.game_state = 0
-        self.terrain = Terrain()
 
     def check_for_events(self):
         for task in event.get():
@@ -24,7 +23,7 @@ class EventHandler:
             if task.type == BGCHANGE:
                 self.screen_color = task.color 
             if task.type == TERRAINCHANGE:
-                self.handle_changing_terrain()
+                self.game_state = gamestate.LOADTERRAIN
 
     def change_bg(self, color):
         ev = event.Event(BGCHANGE, {"color": color})
@@ -37,6 +36,8 @@ class EventHandler:
     def handle_key_press(self, key):
         if key == K_ESCAPE:
             raise SystemExit()
+        if key == K_p:
+            self.game_state = gamestate.PAUSED if self.game_state == gamestate.FREEPLAY else gamestate.FREEPLAY
 
     def handle_state_change(self, state, data_dict):
         if state == gamestate.SPEECH:
@@ -50,8 +51,3 @@ class EventHandler:
         [self.handle_state_change(state, data_dict) for state in data_dict['STATES']]
 
         data_dict["STATES"].clear()
-
-    def handle_changing_terrain(self):
-        terrain = self.terrain.load_terrain()
-        self.screen_color = terrain['COLOR']
-

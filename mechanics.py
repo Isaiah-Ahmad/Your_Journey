@@ -1,3 +1,4 @@
+from eventhandler import BGCHANGE
 from json import dump
 from random import randint, sample
 from pygame.font import Font
@@ -5,6 +6,8 @@ from pygame.image import load
 from pygame.surface import Surface
 from pygame.transform import scale
 from pygame.time import delay
+from pygame.event import post, Event
+from sprites import NPC
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 class Mechanics:
@@ -81,6 +84,18 @@ class Mechanics:
     def blit_sprites(self, all_sprites, screen):
         for sprite in all_sprites:
             screen.blit(sprite.surf, sprite.rect)
+
+    def handle_new_terrain(self, terrain:dict, data_dict: dict, npc_sprites, all_sprites):
+        color = terrain["COLOR"]
+        if terrain.get('NPC', None):
+            new_npc = NPC(terrain["NPC"]["SRC"], terrain['NPC']['SCALE'], terrain['NPC']['POS'], terrain['NPC'].get("SPEECH", []))
+            data_dict["NPCS"].append(new_npc)
+            npc_sprites.add(new_npc)
+            all_sprites.add(new_npc)
+
+        post(Event(BGCHANGE, {"color": color}))
+
+        return npc_sprites, all_sprites
 
     def should_generate(self, chance, max):
         valid = sample(range(max), k=chance)
