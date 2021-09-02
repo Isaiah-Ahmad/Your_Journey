@@ -1,11 +1,12 @@
 # Imports the pygame module
+from json.decoder import JSONDecodeError
 import pygame
 from pygame.constants import *
 from pygame.time import Clock
 
 # Created imports
 from mechanics import mechs
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, gamestate
 from eventhandler import EventHandler
 
 # Other imports
@@ -23,32 +24,26 @@ eventhandler = EventHandler()
 # Set home screen
 mechs.setup_home_screen()
 
-# CustomEvents
-DIALOGUE = USEREVENT + 1
-dialogue_event = pygame.event.Event(DIALOGUE, message="Time to send some dialogues")
-
 # Sprite Groups
 all_sprites = pygame.sprite.Group()
 cactus_sprites = pygame.sprite.Group()
 
 running = True
 game_started = 0
-game_state = 0
-# Custom 
 
-# Dictionary for holding in game data
-data_dict = {}
+data_dict = {"WORLD_POS": 0, "PLAYER": {}, "STATES": [], "SPEECH": []}
 
+runtime = 0
 while running:
     # Setting the screen color
     screen.fill(eventhandler.screen_color)
 
     # Gotta check for those events
-    if pygame.event.get(DIALOGUE):
-        pass
 
     eventhandler.check_for_events()
     screen = mechs.load_screen(screen)
+    data_dict['DISPLAY'] = pygame.display
+    data_dict['SCREEN'] = screen
 
     # Gotta make sure they start the game :D
     if not game_started:
@@ -57,11 +52,11 @@ while running:
 
         if game_started:
             mechs.gui.clear()
-            eventhandler.screen_color = (255, 255, 255)
+            eventhandler.change_bg((255, 255, 255))
         else:
             continue
 
-    if not game_state:
+    if not eventhandler.game_state:
         _, new_rect = mechs.write_to_screen("NEW GAME")
         continue_rect = None
         if path.exists("saves.json"):
@@ -69,35 +64,33 @@ while running:
 
         if pygame.mouse.get_pressed()[0]:
             if new_rect.collidepoint(pygame.mouse.get_pos()):
-                game_state = 1
+                eventhandler.game_state = gamestate.STARTED
+                
             if continue_rect:
                 if continue_rect.collidepoint(pygame.mouse.get_pos()):
-                    game_state = 2
-            if game_state:
-                mechs.gui.clear()
-                eventhandler.screen_color = (0, 0, 0)
-    
-    if game_state in [1, 2]:
-        if game_state == 1:
-            data_dict = mechs.first_time_setup()
-            game_state = 3
-        else:
-            with open("saves.json") as f:
-                data_dict = load(f)
-            game_state = 4
-    
-    elif game_state == 3:
-        eventhandler.screen_color = (194, 178, 128)
-        mechs.write_dialogue("Welcome Hero. It would seem as though you are finally awakening.", pygame.display, screen)
-        mechs.write_dialogue("More meaningful text to come here before game begins I guess", pygame.display, screen)
-        game_state = 5
+                    with open("saves.json") as f:
+                        try:
+                            data_dict = load(f)
+                        except JSONDecodeError:
+                            data_dict = {}
+                            mechs.write_speech("Save file was corrupted. Fix it, and relaunch or continue on new file", pygame.display, screen)
+                        eventhandler.game_state = gamestate.STARTED
 
-    # if game_state == 5:
-        # eventhandler.screen_color = (194, 178, 128)
+            if eventhandler.game_state:
+                mechs.gui.clear()
+                eventhandler.change_bg((194, 178, 128))
+                data_dict["STATES"].append(gamestate.SPEECH)
+                data_dict["SPEECH"] = ["Welcome Hero. It would seem as though you are finally awakening.", "More meaningful text to come here before game begins I guess"]
+                data_dict["MECHS"] = mechs
+
+        pygame.display.flip()
+        continue
+
+    eventhandler.handle_current_state(data_dict)
 
     # Load in sprites
     for sprite in all_sprites:
         screen.blit(sprite.surf, sprite.rect)
 
     pygame.display.flip()
-    clock.tick(30)
+    runtime += clock.tick(30)
