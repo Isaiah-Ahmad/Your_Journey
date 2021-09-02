@@ -42,13 +42,10 @@ class Player(ps.Sprite):
             post(Event(TERRAINCHANGE, {}))
 
 
-class Cactus(ps.Sprite):
-    def __init__(self):
-        super(Cactus, self).__init__()
-        self.surf = scale(load("./Assets/sprites/cactus.png").convert(), (30, 30))
-        self.surf.set_colorkey((0, 0, 0))
-        self.rect = self.surf.get_rect(
-            center=(
-                randint(30, SCREEN_WIDTH - 100),
-                randint(0, SCREEN_HEIGHT - 20)
-            ))
+class NPC(ps.Sprite):
+    def __init__(self, spriteimg:str, scaling:tuple, position:tuple, speech=[]):
+        super(NPC, self).__init__()
+        self.id = id(self)
+        self.surf = scale(load(spriteimg).convert(), scaling)
+        self.rect = self.surf.get_rect(center=position)
+        self.speech = speech
