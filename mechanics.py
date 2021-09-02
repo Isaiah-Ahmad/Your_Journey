@@ -1,3 +1,4 @@
+from json import dump
 from random import randint, sample
 from pygame.font import Font
 from pygame.image import load
@@ -28,6 +29,18 @@ class Mechanics:
         self.gui.append((title, title_rect))
         self.gui.append((start_text, start_text_rect))
 
+    def setup_pause_screen(self):
+        surface = Surface((int(SCREEN_WIDTH * 0.4), int(SCREEN_HEIGHT * 0.7)))
+        surface.fill((255, 255, 255))
+        surface_rect = surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        pause = self.set_render_text("Paused?", width_percent_offset=0.5, height_percent_offset=0.3, colors=(180, 180, 180))
+        resume = self.set_render_text("Press P to resume or ESC to quit", 20, 0.5, 0.4, colors=(40, 40, 40))
+        save = self.set_render_text("Save", 25, 0.4, 0.6)
+
+        
+        self.gui.extend([(surface, surface_rect), pause, resume, save])
+        return save[1]
+
     def write_to_screen(self, text, width_percent_offset=0.5, height_percent_offset=0.5, colors=(150, 150, 150), background=None):
         word_info = self.set_render_text(text, 31, width_percent_offset, height_percent_offset, colors, background)
         self.gui.append(word_info)
@@ -55,9 +68,19 @@ class Mechanics:
 
         return (words, word_rect)
 
+    def save(self, data_dict):
+        to_save = {}
+
+        with open("saves.json", "w") as f:
+            dump(to_save, f, indent=4)
+
     def load_screen(self, screen):
         [screen.blit(gui[0], gui[1]) for gui in self.gui]
         return screen
+
+    def blit_sprites(self, all_sprites, screen):
+        for sprite in all_sprites:
+            screen.blit(sprite.surf, sprite.rect)
 
     def should_generate(self, chance, max):
         valid = sample(range(max), k=chance)

@@ -8,6 +8,7 @@ class GameState:
     STARTED = 1
     FREEPLAY = 2
     SPEECH = 3 # Requires Mechs, Display, Screen, Dialogues
+    PAUSED = 4
     MAKEPLAYER = 10
 
 gamestate = GameState()

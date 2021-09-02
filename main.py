@@ -1,6 +1,7 @@
 # Imports the pygame module
 from json.decoder import JSONDecodeError
 import pygame
+from pygame import event
 from pygame.constants import *
 from pygame.time import Clock
 from pygame.event import post, Event
@@ -31,6 +32,7 @@ all_sprites = pygame.sprite.Group()
 
 running = True
 game_started = 0
+was_paused = False
 
 data_dict = {"WORLD_POS": 0, "PLAYER": {}, "STATES": [], "SPEECH": []}
 
@@ -73,9 +75,8 @@ while running:
                 if continue_rect.collidepoint(pygame.mouse.get_pos()):
                     with open("saves.json") as f:
                         try:
-                            data_dict = load(f)
+                            data_dict = data_dict.update(load(f))
                         except JSONDecodeError:
-                            data_dict = {}
                             mechs.write_speech("Save file was corrupted. Fix it, and relaunch or continue on new file", pygame.display, screen)
                         eventhandler.game_state = gamestate.STARTED
 
@@ -87,16 +88,31 @@ while running:
                 player = Player()
                 all_sprites.add(player)
                 post(Event(TERRAINCHANGE, {}))
+                data_dict["PLAYER"] = player.__dict__
+                eventhandler.game_state = gamestate.FREEPLAY
 
         pygame.display.flip()
         continue
 
     eventhandler.handle_current_state(data_dict)
-    player.update(pygame.key.get_pressed())
+    mechs.blit_sprites(all_sprites, screen)
 
-    # Load in sprites
-    for sprite in all_sprites:
-        screen.blit(sprite.surf, sprite.rect)
+    if eventhandler.game_state == gamestate.PAUSED:
+        save_rect = mechs.setup_pause_screen()
+        screen = mechs.load_screen(screen)
+        if pygame.mouse.get_pressed()[0]:
+            if save_rect.collidepoint(pygame.mouse.get_pos()):
+                mechs.save(data_dict)
+                data_dict["STATES"].append(gamestate.SPEECH)
+                data_dict["SPEECH"] = ["Saved"]
+
+        was_paused = True 
+    if was_paused:
+        mechs.gui.clear()
+        was_paused = False
+
+    if eventhandler.game_state == gamestate.FREEPLAY:
+        player.update(pygame.key.get_pressed())
 
     pygame.display.flip()
     runtime += clock.tick(30)
