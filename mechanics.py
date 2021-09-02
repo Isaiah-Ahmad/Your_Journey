@@ -1,13 +1,22 @@
 from random import randint, sample
 from pygame.font import Font
 from pygame.image import load
+from pygame.surface import Surface
 from pygame.transform import scale
+from pygame.time import delay
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 class Mechanics:
     def __init__(self) -> None:
         self.gui = []
+        self.dialogue = []
         
+    def first_time_setup(self):
+        data_dict = {}
+        data_dict["WORLD_POSITION"] = 0
+        data_dict["PLAYER"] = {}
+
+        return data_dict
 
     def setup_home_screen(self):
         # Title
@@ -27,10 +36,35 @@ class Mechanics:
         self.gui.append((title, title_rect))
         self.gui.append((start_text, start_text_rect))
 
-    def load_screen(self, screen):
-        for gui in self.gui:
-            screen.blit(gui[0], gui[1])
+    def write_to_screen(self, text, width_percent_offset=0.5, height_percent_offset=0.5, colors=(150, 150, 150), background=None):
+        word_info = self.set_render_text(text, 31, width_percent_offset, height_percent_offset, colors, background)
+        self.gui.append(word_info)
+        return word_info
 
+    def write_dialogue(self, text, display, screen):
+        display.flip()
+        text = self.set_render_text(text, 30, 0.5, 0.8, (200, 200, 200))
+        dbox = Surface((int(SCREEN_WIDTH * 0.8), int(SCREEN_HEIGHT * 0.3)))
+        dbox.fill((100, 100, 100))
+        dbox_rect = dbox.get_rect(center=text[1].center)
+        screen.blit(dbox, dbox_rect)
+        screen.blit(text[0], text[1])
+        display.flip()
+
+        delay(4000)    
+
+    def set_render_text(self, text, font_size=31, width_percent_offset=0.5, height_percent_offset=0.5, colors=(150, 150, 150), background=None):
+        font = Font("freesansbold.ttf", font_size)
+        words = font.render(text, True, colors, background)
+        word_rect = words.get_rect(center= (
+            int(SCREEN_WIDTH * width_percent_offset),
+            int(SCREEN_HEIGHT * height_percent_offset)
+        ))
+
+        return (words, word_rect)
+
+    def load_screen(self, screen):
+        [screen.blit(gui[0], gui[1]) for gui in self.gui]
         return screen
 
     def should_generate(self, chance, max):
