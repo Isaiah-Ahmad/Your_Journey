@@ -3,11 +3,13 @@ from json.decoder import JSONDecodeError
 import pygame
 from pygame.constants import *
 from pygame.time import Clock
+from pygame.event import post, Event
 
 # Created imports
 from mechanics import mechs
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, gamestate
-from eventhandler import EventHandler
+from eventhandler import EventHandler, TERRAINCHANGE
+from sprites import Player
 
 # Other imports
 from os import path
@@ -26,7 +28,6 @@ mechs.setup_home_screen()
 
 # Sprite Groups
 all_sprites = pygame.sprite.Group()
-cactus_sprites = pygame.sprite.Group()
 
 running = True
 game_started = 0
@@ -63,6 +64,8 @@ while running:
             _, continue_rect = mechs.write_to_screen("CONTINUE GAME", height_percent_offset=0.7)
 
         if pygame.mouse.get_pressed()[0]:
+            eventhandler.change_bg((0, 0, 0))
+            eventhandler.check_for_events()
             if new_rect.collidepoint(pygame.mouse.get_pos()):
                 eventhandler.game_state = gamestate.STARTED
                 
@@ -78,15 +81,18 @@ while running:
 
             if eventhandler.game_state:
                 mechs.gui.clear()
-                eventhandler.change_bg((194, 178, 128))
                 data_dict["STATES"].append(gamestate.SPEECH)
-                data_dict["SPEECH"] = ["Welcome Hero. It would seem as though you are finally awakening.", "More meaningful text to come here before game begins I guess"]
+                data_dict["SPEECH"] = ["Welcome Hero. It would seem as though you are finally awakening.", "Move around with the Arrow Keys"]
                 data_dict["MECHS"] = mechs
+                player = Player()
+                all_sprites.add(player)
+                post(Event(TERRAINCHANGE, {}))
 
         pygame.display.flip()
         continue
 
     eventhandler.handle_current_state(data_dict)
+    player.update(pygame.key.get_pressed())
 
     # Load in sprites
     for sprite in all_sprites:
