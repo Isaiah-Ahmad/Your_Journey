@@ -39,7 +39,8 @@ class EventHandler:
         if state == gamestate.SPEECH:
             for speech in data_dict["SPEECH"]:
                 data_dict["MECHS"].write_speech(speech, data_dict["DISPLAY"], data_dict["SCREEN"])
-        
+
+            data_dict["SPEECH"].clear()
 
     def handle_current_state(self, data_dict):
         for state in data_dict['STATES']:
