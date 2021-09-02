@@ -1,7 +1,6 @@
 # Imports the pygame module
 from json.decoder import JSONDecodeError
 import pygame
-from pygame import event
 from pygame.constants import *
 from pygame.time import Clock
 from pygame.event import post, Event
@@ -11,6 +10,7 @@ from mechanics import mechs
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, gamestate
 from eventhandler import EventHandler, TERRAINCHANGE
 from sprites import Player
+from terrain import terrain
 
 # Other imports
 from os import path
@@ -29,12 +29,13 @@ mechs.setup_home_screen()
 
 # Sprite Groups
 all_sprites = pygame.sprite.Group()
+npc_sprites = pygame.sprite.Group()
 
 running = True
 game_started = 0
 was_paused = False
 
-data_dict = {"WORLD_POS": 0, "PLAYER": {}, "STATES": [], "SPEECH": []}
+data_dict = {"WORLD_POS": 0, "PLAYER": {}, "STATES": [], "SPEECH": [], "NPCS": []}
 
 runtime = 0
 while running:
@@ -88,13 +89,18 @@ while running:
                 player = Player()
                 all_sprites.add(player)
                 post(Event(TERRAINCHANGE, {}))
-                data_dict["PLAYER"] = player.__dict__
                 eventhandler.game_state = gamestate.FREEPLAY
 
         pygame.display.flip()
         continue
 
     eventhandler.handle_current_state(data_dict)
+    if eventhandler.game_state == gamestate.LOADTERRAIN:
+        [sprite.kill() for sprite in npc_sprites]
+        data_dict['NPCS'].clear()
+        npc_sprites, all_sprites = mechs.handle_new_terrain(terrain.generate_terrain(), data_dict, npc_sprites, all_sprites)
+        eventhandler.game_state = gamestate.FREEPLAY
+
     mechs.blit_sprites(all_sprites, screen)
 
     if eventhandler.game_state == gamestate.PAUSED:
@@ -110,6 +116,14 @@ while running:
     if was_paused:
         mechs.gui.clear()
         was_paused = False
+    
+    for npc in npc_sprites:
+        collided = pygame.sprite.spritecollide(player, npc_sprites, False)
+        if collided:
+            if collided[0].speech:
+                data_dict['STATES'].append(gamestate.SPEECH)
+                data_dict['SPEECH'] = collided[0].speech
+
 
     if eventhandler.game_state == gamestate.FREEPLAY:
         player.update(pygame.key.get_pressed())
