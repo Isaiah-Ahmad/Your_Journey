@@ -1,16 +1,19 @@
 from pygame.locals import *
 from pygame import event, QUIT
 from constants import gamestate
+from terrain import Terrain
 
 # CustomEvents
 BGCHANGE = USEREVENT + 1
 GAMESTATECHANGE = USEREVENT + 2
+TERRAINCHANGE = USEREVENT + 3
 
 class EventHandler:
     def __init__(self):
         # self.screen_color = (194,178,128)
         self.screen_color = (51, 51, 51)
         self.game_state = 0
+        self.terrain = Terrain()
 
     def check_for_events(self):
         for task in event.get():
@@ -20,8 +23,8 @@ class EventHandler:
                 self.handle_key_press(task.key)       
             if task.type == BGCHANGE:
                 self.screen_color = task.color 
-            # if task.type == GAMESTATECHANGE:
-            #     self.handle_state_change(task)
+            if task.type == TERRAINCHANGE:
+                self.handle_changing_terrain()
 
     def change_bg(self, color):
         ev = event.Event(BGCHANGE, {"color": color})
@@ -47,4 +50,8 @@ class EventHandler:
         [self.handle_state_change(state, data_dict) for state in data_dict['STATES']]
 
         data_dict["STATES"].clear()
+
+    def handle_changing_terrain(self):
+        terrain = self.terrain.load_terrain()
+        self.screen_color = terrain['COLOR']
 
