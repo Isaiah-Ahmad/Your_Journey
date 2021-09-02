@@ -43,8 +43,8 @@ class EventHandler:
             data_dict["SPEECH"].clear()
 
     def handle_current_state(self, data_dict):
-        for state in data_dict['STATES']:
-            self.handle_state_change(state, data_dict)
+        if not data_dict['STATES']: self.handle_state_change(self.game_state, data_dict)
+        [self.handle_state_change(state, data_dict) for state in data_dict['STATES']]
 
         data_dict["STATES"].clear()
 
