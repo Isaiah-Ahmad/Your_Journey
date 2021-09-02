@@ -9,15 +9,7 @@ from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 class Mechanics:
     def __init__(self) -> None:
         self.gui = []
-        self.dialogue = []
         
-    def first_time_setup(self):
-        data_dict = {}
-        data_dict["WORLD_POSITION"] = 0
-        data_dict["PLAYER"] = {}
-
-        return data_dict
-
     def setup_home_screen(self):
         # Title
         title = scale(load("./Assets/images/text.png").convert(), (int(SCREEN_WIDTH * 0.7), int(SCREEN_HEIGHT * 0.7)))
@@ -41,7 +33,7 @@ class Mechanics:
         self.gui.append(word_info)
         return word_info
 
-    def write_dialogue(self, text, display, screen):
+    def write_speech(self, text, display, screen):
         display.flip()
         text = self.set_render_text(text, 30, 0.5, 0.8, (200, 200, 200))
         dbox = Surface((int(SCREEN_WIDTH * 0.8), int(SCREEN_HEIGHT * 0.3)))
@@ -71,6 +63,5 @@ class Mechanics:
         valid = sample(range(max), k=chance)
         value = randint(0, max)
         return value in valid
-
 
 mechs = Mechanics()
