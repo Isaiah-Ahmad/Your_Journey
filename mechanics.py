@@ -39,10 +39,10 @@ class Mechanics:
         pause = self.set_render_text("Paused?", width_percent_offset=0.5, height_percent_offset=0.3, colors=(180, 180, 180))
         resume = self.set_render_text("Press P to resume or ESC to quit", 20, 0.5, 0.4, colors=(40, 40, 40))
         save = self.set_render_text("Save", 25, 0.4, 0.6)
+        exitq = self.set_render_text("Exit", 25, 0.6, 0.6)
 
-        
-        self.gui.extend([(surface, surface_rect), pause, resume, save])
-        return save[1]
+        self.gui.extend([(surface, surface_rect), pause, resume, save, exitq])
+        return save[1], exitq[1]
 
     def write_to_screen(self, text, width_percent_offset=0.5, height_percent_offset=0.5, colors=(150, 150, 150), background=None):
         word_info = self.set_render_text(text, 31, width_percent_offset, height_percent_offset, colors, background)

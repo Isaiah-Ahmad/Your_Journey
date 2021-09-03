@@ -104,13 +104,17 @@ while running:
     mechs.blit_sprites(all_sprites, screen)
 
     if eventhandler.game_state == gamestate.PAUSED:
-        save_rect = mechs.setup_pause_screen()
+        save_rect, exit_rect = mechs.setup_pause_screen()
         screen = mechs.load_screen(screen)
         if pygame.mouse.get_pressed()[0]:
             if save_rect.collidepoint(pygame.mouse.get_pos()):
                 mechs.save(data_dict)
                 data_dict["STATES"].append(gamestate.SPEECH)
                 data_dict["SPEECH"] = ["Saved"]
+            if exit_rect.collidepoint(pygame.mouse.get_pos()):
+                pygame.quit()
+                print("Thanks for playin'")
+                break
 
         was_paused = True 
     if was_paused:
