@@ -27,14 +27,18 @@ terrain_types = {
             "POS": (int(SCREEN_WIDTH * 0.8), int(SCREEN_HEIGHT * 0.4)),
             "SPEECH": ["Why hello there young man...", "Me? Don't worry about who I am", "I'm here to guide you :D"]
         },
-        "OBJECTS": [{"SRC": "Assets/sprites/rock.png", "COUNT": 10}]
+        "OBJECTS": [{"SRC": "Assets/sprites/rock.png", "COUNT": 3}, {"COUNT": 16, "SRC": "Assets/sprites/tree.png"}]
     },
-    "MOUNTAIN": {"COLOR": (252, 140, 64), "NPC":{
-        "SRC": "./Assets/sprites/thinkadje.jpg",
-        "SCALE": (70, 120),
-        "POS": (int(SCREEN_WIDTH * 0.5), int(SCREEN_HEIGHT * 0.4)),
-        "SPEECH": ["Mhmmm... Human?"]
-    }}
+    "MOUNTAIN": {
+        "COLOR": (252, 140, 64), 
+        "NPC":{
+            "SRC": "./Assets/sprites/thinkadje.jpg",
+            "SCALE": (70, 120),
+            "POS": (int(SCREEN_WIDTH * 0.5), int(SCREEN_HEIGHT * 0.4)),
+            "SPEECH": ["Mhmmm... Human?"] 
+            },
+        "OBJECTS": [{"SRC": "Assets/sprites/rock.png", "COUNT": 15}]
+    }
 }
 
 class Terrain:
