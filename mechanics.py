@@ -96,7 +96,7 @@ class Mechanics:
         if terrain.get("OBJECTS", None):
             for obj in terrain["OBJECTS"]:
                 for _ in range(obj["COUNT"]):
-                    item = Vanity(obj["SRC"])
+                    item = Vanity(obj["SRC"], obj["SCALE"])
                     npc_sprites.add(item)
                     all_sprites.add(item)
 

@@ -16,6 +16,7 @@ OPTIONAL:
         Dict Contents:
             SRC: path to sprite image (str)
             COUNT: Amount to generate (int)
+            SCALE: Size of the sprite (tuple)
 """
 terrain_types = {
     "SANDY": {"COLOR": (194, 178, 128)},
@@ -27,7 +28,7 @@ terrain_types = {
             "POS": (int(SCREEN_WIDTH * 0.8), int(SCREEN_HEIGHT * 0.4)),
             "SPEECH": ["Why hello there young man...", "Me? Don't worry about who I am", "I'm here to guide you :D"]
         },
-        "OBJECTS": [{"SRC": "Assets/sprites/rock.png", "COUNT": 3}, {"COUNT": 16, "SRC": "Assets/sprites/tree.png"}]
+        "OBJECTS": [{"SRC": "Assets/sprites/rock.png", "COUNT": 3, "SCALE": (32, 32)}, {"COUNT": 16, "SRC": "Assets/sprites/tree.png", 'SCALE': (40, 60)}]
     },
     "MOUNTAIN": {
         "COLOR": (252, 140, 64), 
@@ -37,7 +38,7 @@ terrain_types = {
             "POS": (int(SCREEN_WIDTH * 0.5), int(SCREEN_HEIGHT * 0.4)),
             "SPEECH": ["Mhmmm... Human?"] 
             },
-        "OBJECTS": [{"SRC": "Assets/sprites/rock.png", "COUNT": 15}]
+        "OBJECTS": [{"SRC": "Assets/sprites/rock.png", "COUNT": 15, "SCALE": (32, 32)}]
     }
 }
 
