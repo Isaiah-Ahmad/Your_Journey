@@ -1,7 +1,6 @@
 from pygame.locals import *
 from pygame import event, QUIT
 from constants import gamestate
-from terrain import terrain
 
 # CustomEvents
 BGCHANGE = USEREVENT + 1
@@ -34,8 +33,6 @@ class EventHandler:
         event.post(ev)
     
     def handle_key_press(self, key):
-        if key == K_ESCAPE:
-            raise SystemExit()
         if key == K_p:
             self.game_state = gamestate.PAUSED if self.game_state == gamestate.FREEPLAY else gamestate.FREEPLAY
 
