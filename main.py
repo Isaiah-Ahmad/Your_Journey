@@ -9,7 +9,7 @@ from pygame.event import post, Event
 from mechanics import mechs
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, gamestate
 from eventhandler import EventHandler, TERRAINCHANGE
-from sprites import Player
+from sprites import NPC, Player
 from terrain import terrain
 
 # Other imports
@@ -123,11 +123,11 @@ while running:
     
     for npc in npc_sprites:
         collided = pygame.sprite.spritecollide(player, npc_sprites, False)
-        if collided:
-            if collided[0].speech:
-                data_dict['STATES'].append(gamestate.SPEECH)
-                data_dict['SPEECH'] = collided[0].speech
-
+        for sprite in collided:
+            if isinstance(collided, NPC):
+                if collided.speech:
+                    data_dict['STATES'].append(gamestate.SPEECH)
+                    data_dict['SPEECH'] = collided.speech
 
     if eventhandler.game_state == gamestate.FREEPLAY:
         player.update(pygame.key.get_pressed())
