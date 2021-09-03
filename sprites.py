@@ -50,9 +50,9 @@ class NPC(ps.Sprite):
         self.rect = self.surf.get_rect(center=position)
         self.speech = speech
 
-class Vanity(ps.Sprite):
+class Decor(ps.Sprite):
     def __init__(self, spriteimg:str, scaling:tuple):
-        super(Vanity, self).__init__()
+        super(Decor, self).__init__()
         self.surf = scale(load(spriteimg).convert(), scaling)
         self.surf.set_colorkey((0, 0, 0))
         self.rect = self.surf.get_rect(center=self.get_position())

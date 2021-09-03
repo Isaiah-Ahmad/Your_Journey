@@ -7,7 +7,7 @@ from pygame.surface import Surface
 from pygame.transform import scale
 from pygame.time import delay
 from pygame.event import post, Event
-from sprites import NPC, Vanity
+from sprites import NPC, Decor
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 class Mechanics:
@@ -96,7 +96,7 @@ class Mechanics:
         if terrain.get("OBJECTS", None):
             for obj in terrain["OBJECTS"]:
                 for _ in range(obj["COUNT"]):
-                    item = Vanity(obj["SRC"], obj["SCALE"])
+                    item = Decor(obj["SRC"], obj["SCALE"])
                     npc_sprites.add(item)
                     all_sprites.add(item)
 
