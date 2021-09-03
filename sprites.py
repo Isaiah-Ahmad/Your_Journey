@@ -49,3 +49,15 @@ class NPC(ps.Sprite):
         self.surf = scale(load(spriteimg).convert(), scaling)
         self.rect = self.surf.get_rect(center=position)
         self.speech = speech
+
+class Vanity(ps.Sprite):
+    def __init__(self, spriteimg:str):
+        super(Vanity, self).__init__()
+        self.surf = load(spriteimg).convert()
+        self.surf.set_colorkey((0, 0, 0))
+        self.rect = self.surf.get_rect(center=self.get_position())
+
+    def get_position(self):
+        width = randint(20, SCREEN_WIDTH - 20)
+        height = randint(20, SCREEN_HEIGHT - 20)
+        return (width, height)
