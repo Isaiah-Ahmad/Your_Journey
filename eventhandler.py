@@ -1,5 +1,7 @@
 from pygame.locals import *
-from pygame import event, QUIT
+from pygame.event import Event, post, get
+from pygame import QUIT
+from pygame import mouse
 from constants import gamestate
 
 # CustomEvents
@@ -13,8 +15,8 @@ class EventHandler:
         self.screen_color = (51, 51, 51)
         self.game_state = 0
 
-    def check_for_events(self):
-        for task in event.get():
+    def check_for_events(self, data_dict):
+        for task in get():
             if task.type == QUIT:
                 raise SystemExit()
             if task.type == KEYDOWN:
@@ -23,23 +25,26 @@ class EventHandler:
                 self.screen_color = task.color 
             if task.type == TERRAINCHANGE:
                 self.game_state = gamestate.LOADTERRAIN
+            if task.type == MOUSEBUTTONDOWN:
+                self.check_for_mouse_collisions(data_dict)
+        return data_dict
 
     def change_bg(self, color):
-        ev = event.Event(BGCHANGE, {"color": color})
-        event.post(ev)
+        ev = Event(BGCHANGE, {"color": color})
+        post(ev)
 
     def change_game_state(self, data_dict):
-        ev = event.Event(GAMESTATECHANGE, data_dict)
-        event.post(ev)
+        ev = Event(GAMESTATECHANGE, data_dict)
+        post(ev)
     
     def handle_key_press(self, key):
-        if key == K_p:
+        if key == K_ESCAPE:
             self.game_state = gamestate.PAUSED if self.game_state == gamestate.FREEPLAY else gamestate.FREEPLAY
 
     def handle_state_change(self, state, data_dict):
         if state == gamestate.SPEECH:
             for speech in data_dict["SPEECH"]:
-                data_dict["MECHS"].write_speech(speech, data_dict["DISPLAY"], data_dict["SCREEN"])
+                data_dict["MECHS"].write_speech(speech, data_dict)
 
             data_dict["SPEECH"].clear()
 
@@ -48,3 +53,14 @@ class EventHandler:
         [self.handle_state_change(state, data_dict) for state in data_dict['STATES']]
 
         data_dict["STATES"].clear()
+
+    def check_for_mouse_collisions(self, data_dict):
+        print("Mouse was pressed")
+        for sprite in data_dict["SG"]["ALLSPRITES"]:
+            if sprite.rect.collidepoint(mouse.get_pos()):
+                if hasattr(sprite, "speech"):
+                    if sprite.speech:
+                        data_dict['STATES'].append(gamestate.SPEECH)
+                        data_dict['SPEECH'] = sprite.speech
+
+eventhandler = EventHandler()

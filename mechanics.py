@@ -37,7 +37,7 @@ class Mechanics:
         surface.fill((255, 255, 255))
         surface_rect = surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         pause = self.set_render_text("Paused?", width_percent_offset=0.5, height_percent_offset=0.3, colors=(180, 180, 180))
-        resume = self.set_render_text("Press P to resume or ESC to quit", 20, 0.5, 0.4, colors=(40, 40, 40))
+        resume = self.set_render_text("Press ESC to resume", 20, 0.5, 0.4, colors=(40, 40, 40))
         save = self.set_render_text("Save", 25, 0.4, 0.6)
         exitq = self.set_render_text("Exit", 25, 0.6, 0.6)
 
@@ -49,15 +49,15 @@ class Mechanics:
         self.gui.append(word_info)
         return word_info
 
-    def write_speech(self, text, display, screen):
-        display.flip()
+    def write_speech(self, text, data_dict):
+        data_dict['display'].flip()
         text = self.set_render_text(text, 30, 0.5, 0.8, (200, 200, 200))
         dbox = Surface((int(SCREEN_WIDTH * 0.8), int(SCREEN_HEIGHT * 0.3)))
-        dbox.fill((100, 100, 100))
+        dbox.fill((20, 20, 20))
         dbox_rect = dbox.get_rect(center=text[1].center)
-        screen.blit(dbox, dbox_rect)
-        screen.blit(text[0], text[1])
-        display.flip()
+        data_dict['screen'].blit(dbox, dbox_rect)
+        data_dict['screen'].blit(text[0], text[1])
+        data_dict['display'].flip()
 
         delay(4000)    
 
@@ -77,32 +77,34 @@ class Mechanics:
         with open("saves.json", "w") as f:
             dump(to_save, f, indent=4)
 
-    def load_screen(self, screen):
-        [screen.blit(gui[0], gui[1]) for gui in self.gui]
-        return screen
+    def load_screen(self, dd):
+        [dd['screen'].blit(gui[0], gui[1]) for gui in self.gui]
 
-    def blit_sprites(self, all_sprites, screen):
-        for sprite in all_sprites:
-            screen.blit(sprite.surf, sprite.rect)
+    def blit_sprites(self, data_dict):
+        for sprite in data_dict["SG"]["ALLSPRITES"]:
+            data_dict["screen"].blit(sprite.surf, sprite.rect)
 
-    def handle_new_terrain(self, terrain:dict, data_dict: dict, npc_sprites, all_sprites):
+    def handle_new_terrain(self, terrain:dict, data_dict: dict):
+        self.kill_sprites(data_dict, ["NPCSPRITES", "DECORSPRITES"])
+
         color = terrain["COLOR"]
         if terrain.get('NPC', None):
             new_npc = NPC(terrain["NPC"]["SRC"], terrain['NPC']['SCALE'], terrain['NPC']['POS'], terrain['NPC'].get("SPEECH", []))
-            data_dict["NPCS"].append(new_npc)
-            npc_sprites.add(new_npc)
-            all_sprites.add(new_npc)
+            data_dict["SG"]["NPCSPRITES"].add(new_npc)
+            data_dict["SG"]["ALLSPRITES"].add(new_npc)
         
         if terrain.get("OBJECTS", None):
             for obj in terrain["OBJECTS"]:
                 for _ in range(obj["COUNT"]):
                     item = Decor(obj["SRC"], obj["SCALE"])
-                    npc_sprites.add(item)
-                    all_sprites.add(item)
+                    data_dict["SG"]["DECORSPRITES"].add(item)
+                    data_dict["SG"]["ALLSPRITES"].add(item)
 
         post(Event(BGCHANGE, {"color": color}))
 
-        return npc_sprites, all_sprites
+    def kill_sprites(self, data_dict, keys:list):
+        for key in keys:
+            [sprite.kill() for sprite in data_dict["SG"][key]]
 
     def should_generate(self, chance, max):
         valid = sample(range(max), k=chance)
